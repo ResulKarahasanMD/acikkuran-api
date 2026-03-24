@@ -1,5 +1,7 @@
 const Fastify = require('fastify')
 const Postgres = require('@fastify/postgres')
+const fs = require('fs')
+const path = require('path')
 
 const FastifyCors = require('@fastify/cors')
 const { isCacheEnabled } = require('./config')
@@ -70,17 +72,27 @@ function buildFastify() {
     }
   )
 
+  const indexHtml = fs.readFileSync(
+    path.join(__dirname, 'public', 'index.html'),
+    'utf8'
+  )
+
   fastify.route({
     method: 'GET',
     url: '/',
-    handler: async (_, reply) => {
-      reply.send({
-        name: 'Açık Kuran API',
-        repository: 'https://github.com/ziegfiroyt/acikkuran-api',
-        website: 'https://acikkuran.com',
-        author: 'Uğur Sözen <x.com/ziegfiroyt>',
-        email: 'selam@acikkuran.com',
-      })
+    handler: async (req, reply) => {
+      const accept = req.headers['accept'] || ''
+      if (accept.includes('text/html')) {
+        reply.type('text/html').send(indexHtml)
+      } else {
+        reply.send({
+          name: 'Açık Kuran API',
+          repository: 'https://github.com/ziegfiroyt/acikkuran-api',
+          website: 'https://acikkuran.com',
+          author: 'Uğur Sözen <x.com/ziegfiroyt>',
+          email: 'selam@acikkuran.com',
+        })
+      }
     },
   })
 
