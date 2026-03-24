@@ -72,10 +72,17 @@ function buildFastify() {
     }
   )
 
-  const indexHtml = fs.readFileSync(
-    path.join(__dirname, 'public', 'index.html'),
-    'utf8'
-  )
+  let indexHtml
+  try {
+    indexHtml = fs.readFileSync(
+      path.join(__dirname, 'public', 'index.html'),
+      'utf8'
+    )
+  } catch (err) {
+    throw new Error(
+      `Failed to load public/index.html: ${err.message}. Ensure the file exists in the 'public' directory.`
+    )
+  }
 
   fastify.route({
     method: 'GET',

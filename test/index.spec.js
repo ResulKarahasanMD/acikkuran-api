@@ -22,6 +22,9 @@ tap.test('GET `/` route returns HTML for browser requests', (t) => {
       t.equal(response.statusCode, 200)
       t.match(response.headers['content-type'], /text\/html/)
       t.ok(response.payload.includes('Açık Kuran API'))
+      t.ok(response.payload.includes('<code>https://api.acikkuran.com</code>'))
+      t.ok(response.payload.includes('/authors'))
+      t.ok(response.payload.includes('/surahs'))
       t.end()
     }
   )
