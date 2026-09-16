@@ -106,6 +106,9 @@ const oldToNew = new Map(); for (const [ar, oid] of oldByArabic) if (newByArabic
 const diffRows = oldDiffs.filter((d) => oldToNew.has(d.root_id)).map((d) => [oldToNew.get(d.root_id), d.diff, d.count]);
 rep.rootdiffs = await insertRows("acikkuran_rootdiffs", ["root_id", "diff", "count"], diffRows);
 rep.roots_without_diffs = rootRows.length - new Set(diffRows.map((d) => d[0])).size;
+// /words ucunun kimlikleri gerçek DB'de ayrı bir sayaçtır (1:1 ilk kelime = 1, mushaf sırası); canlı sitenin kelime
+// kimlikleri (verseparts ile aynı) korunmaz. test/verses.spec.js bunu bekler.
+wordRows.sort((a, b) => a[1] - b[1] || a[2] - b[2] || a[3] - b[3]).forEach((r, i) => (r[0] = i + 1));
 rep.rootwords = await insertRows("acikkuran_rootwords", ["id", "surah_id", "verse_number", "sort_number", "arabic", "transcription", "turkish", "root_id"], wordRows);
 rep.verseparts = await insertRows("acikkuran_verseparts", ["id", "surah_id", "verse_number", "verse_id", "sort_number", "arabic", "transcription_tr", "transcription_en", "translation_tr", "translation_en", "root_id", "details"], partRows);
 rep.rootverses = await insertRows("acikkuran_rootverses", ["id", "root_id", "sort_number", "surah_id", "verse_number", "verse_id", "arabic", "transcription", "turkish", "detail_1", "detail_2", "detail_3", "detail_4", "detail_5", "detail_6", "detail_7", "detail_8"], rvRows);

@@ -53,8 +53,8 @@ acikkuran verisi belirler.
 
 - Kök kimlikleri gerçekle aynı (`qwm`=13). Kök Latin kodlaması: hemze→`A`, ذ→`p` (`Axp`, `Apn`, `$yA`).
 - Sayfa numarası 0 tabanlı (Fatiha=0, 2:1=1, 2:255=41, 109:1=603, 112:1=604); quran.com−1 kuralından 240 ayet sapar.
-- Test: 281 testten 280 geçer. Tek başarısızlık `/surah/1/verse/1/words`: kelime kaydının seri id'sinin 1 olmasını
-  bekler, yerelde otomatik id farklı. Veri farkı değil.
+- Test: 291 testin tamamı geçer. `acikkuran_rootwords.id` gerçek DB gibi mushaf sırasında 1'den başlar (`/words` ucu);
+  canlı sitenin kelime kimlikleri `acikkuran_verseparts.id`'de korunur.
 - `/surah/1/verse/1/translations` sırası: uçta ORDER BY yok; `fix_translation_order.sql` fiziksel sırayı kurar, test geçer.
 
 ## Bilinen sınırlar
