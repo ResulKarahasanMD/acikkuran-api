@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Açık Kuran API</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          Helvetica, Arial, sans-serif;
+        background-color: #f8f9fa;
+        color: #212529;
+        line-height: 1.6;
+      }
+
+      header {
+        background-color: #1a1a2e;
+        color: #fff;
+        padding: 2.5rem 1.5rem;
+        text-align: center;
+      }
+
+      header img {
+        width: 72px;
+        margin-bottom: 1rem;
+      }
+
+      header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+
+      header p {
+        font-size: 1rem;
+        opacity: 0.8;
+        max-width: 520px;
+        margin: 0 auto 1.25rem;
+      }
+
+      .badge {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 20px;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.8rem;
+        color: #fff;
+        text-decoration: none;
+        margin: 0.25rem;
+        transition: background 0.2s;
+      }
+
+      .badge:hover {
+        background: rgba(255, 255, 255, 0.25);
+      }
+
+      main {
+        max-width: 900px;
+        margin: 2.5rem auto;
+        padding: 0 1.25rem;
+      }
+
+      .base-url {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      .base-url span {
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #6c757d;
+      }
+
+      .base-url code {
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo,
+          monospace;
+        font-size: 0.95rem;
+        color: #0d6efd;
+      }
+
+      h2 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #6c757d;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #dee2e6;
+      }
+
+      .endpoint {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        overflow: hidden;
+      }
+
+      .endpoint-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 1rem 1.25rem;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .endpoint-header:hover {
+        background: #f8f9fa;
+      }
+
+      .method {
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo,
+          monospace;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        white-space: nowrap;
+        background: #d1e7dd;
+        color: #0a3622;
+        margin-top: 2px;
+        flex-shrink: 0;
+      }
+
+      .endpoint-path {
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo,
+          monospace;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #212529;
+        word-break: break-all;
+      }
+
+      .endpoint-desc {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-top: 0.2rem;
+      }
+
+      .endpoint-body {
+        display: none;
+        border-top: 1px solid #dee2e6;
+        padding: 1rem 1.25rem;
+        background: #f8f9fa;
+      }
+
+      .endpoint.open .endpoint-body {
+        display: block;
+      }
+
+      .endpoint-body p {
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .endpoint-body a {
+        color: #0d6efd;
+        word-break: break-all;
+      }
+
+      pre {
+        background: #1a1a2e;
+        color: #e8e8e8;
+        border-radius: 6px;
+        padding: 1rem;
+        font-size: 0.8rem;
+        overflow-x: auto;
+        margin-top: 0.75rem;
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo,
+          monospace;
+        line-height: 1.5;
+      }
+
+      .section {
+        margin-bottom: 2.5rem;
+      }
+
+      footer {
+        text-align: center;
+        padding: 2rem 1.25rem;
+        font-size: 0.85rem;
+        color: #6c757d;
+        border-top: 1px solid #dee2e6;
+        margin-top: 3rem;
+      }
+
+      footer a {
+        color: #0d6efd;
+        text-decoration: none;
+      }
+
+      footer a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <img
+        src="https://raw.githubusercontent.com/ziegfiroyt/acikkuran-api/main/logo.png"
+        alt="Açık Kuran Logo"
+      />
+      <h1>Açık Kuran API</h1>
+      <p>
+        Open-source, ad-free Qur'an API providing verses, translations,
+        word-by-word analysis, and more.
+      </p>
+      <a
+        class="badge"
+        href="https://github.com/ziegfiroyt/acikkuran-api"
+        target="_blank"
+        rel="noopener noreferrer"
+        >GitHub</a
+      >
+      <a
+        class="badge"
+        href="https://acikkuran.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        >acikkuran.com</a
+      >
+      <a
+        class="badge"
+        href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
+        target="_blank"
+        rel="noopener noreferrer"
+        >CC BY-NC-SA 4.0</a
+      >
+    </header>
+
+    <main>
+      <div class="base-url">
+        <span>Base URL</span>
+        <code>https://api.acikkuran.com</code>
+      </div>
+
+      <div class="section">
+        <h2>Authors</h2>
+
+        <div class="endpoint">
+          <div class="endpoint-header" onclick="toggle(this)">
+            <span class="method">GET</span>
+            <div>
+              <div class="endpoint-path">/authors</div>
+              <div class="endpoint-desc">Lists all translation authors.</div>
+            </div>
+          </div>
+          <div class="endpoint-body">
+            <p>
+              Example:
+              <a
+                href="https://api.acikkuran.com/authors"
+                target="_blank"
+                rel="noopener noreferrer"
+                >https://api.acikkuran.com/authors</a
+              >
+            </p>
+            <pre>{
+  "data": [
+    { "id": 50, "name": "Erhan Aktaş", "description": "Kerim Kur'an", "language": "tr", "url": null },
+    { "id": 102, "name": "The Monotheist Group", "description": "The Quran: A Monotheist Translation", "language": "en", "url": null }
+  ]
+}</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Surahs</h2>
+
+        <div class="endpoint">
+          <div class="endpoint-header" onclick="toggle(this)">
+            <span class="method">GET</span>
+            <div>
+              <div class="endpoint-path">/surahs</div>
+              <div class="endpoint-desc">Lists all 114 surahs (chapters).</div>
+            </div>
+          </div>
+          <div class="endpoint-body">
+            <p>
+              Example:
+              <a
+                href="https://api.acikkuran.com/surahs"
+                target="_blank"
+                rel="noopener noreferrer"
+                >https://api.acikkuran.com/surahs</a
+              >
+            </p>
+            <pre>{
+  "data": [
+    {
+      "id": 1, "name": "Fatiha", "name_en": "Al-Fatihah", "slug": "fatiha",
+      "verse_count": 7, "page_number": 0, "name_original": "سُورَةُ ٱلْفَاتِحَةِ",
+      "audio": { "mp3": "https://audio.acikkuran.com/tr/1.mp3", "duration": 38 }
+    }
+  ]
+}</pre>
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <div class="endpoint-header" onclick="toggle(this)">
+            <span class="method">GET</span>
+            <div>
+              <div class="endpoint-path">
+                /surah/[surah_id]?author=[author_id]
+              </div>
+              <div class="endpoint-desc">
+                Gets surah details and lists all its verses with translations.
+              </div>
+            </div>
+          </div>
+          <div class="endpoint-body">
+            <p>
+              Example 1 (default author):
+              <a
+                href="https://api.acikkuran.com/surah/1"
+                target="_blank"
+                rel="noopener noreferrer"
+                >https://api.acikkuran.com/surah/1</a
+              >
+            </p>
+            <p>
+              Example 2 (specific author):
+              <a
+                href="https://api.acikkuran.com/surah/6?author=8"
+                target="_blank"
+                rel="noopener noreferrer"
+                >https://api.acikkuran.com/surah/6?author=8</a
+              >
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Verses</h2>
+
+        <div class="endpoint">
+          <div class="endpoint-header" onclick="toggle(this)">
+            <span class="method">GET</span>
+            <div>
+              <div class="endpoint-path">
+                /surah/[surah_id]/verse/[verse_number]?author=[author_id]
+              </div>
+              <div class="endpoint-desc">Gets verse detail with translation.</div>
+            </div>
+          </div>
+          <div class="endpoint-body">
+            <p>
+              Example:
+              <a
+                href="https://api.acikkuran.com/surah/6/verse/1"
+                target="_blank"
+                rel="noopener noreferrer"
+                >https://api.acikkuran.com/surah/6/verse/1</a
+              >
+            </p>
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <div class="endpoint-header" onclick="toggle(this)">
+            <span class="method">GET</span>
+            <div>
+              <div class="endpoint-path">
+                /surah/[surah_id]/verse/[verse_number]/translations
+              </div>
+              <div class="endpoint-desc">
+                Lists all available translations for a verse.
+              </div>
+            </div>
+          </div>
+          <div class="endpoint-body">
+            <p>
+              Example:
+              <a
+                href="https://api.acikkuran.com/surah/6/verse/1/translations"
+                target="_blank"
+                rel="noopener noreferrer"
+                >https://api.acikkuran.com/surah/6/verse/1/translations</a
+              >
+            </p>
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <div class="endpoint-header" onclick="toggle(this)">
+            <span class="method">GET</span>
+            <div>
+              <div class="endpoint-path">
+                /surah/[surah_id]/verse/[verse_number]/verseparts
+              </div>
+              <div class="endpoint-desc">
+                Lists word-by-word breakdown (verseparts) for a verse.
+              </div>
+            </div>
+          </div>
+          <div class="endpoint-body">
+            <p>
+              Example:
+              <a
+                href="https://api.acikkuran.com/surah/6/verse/1/verseparts"
+                target="_blank"
+                rel="noopener noreferrer"
+                >https://api.acikkuran.com/surah/6/verse/1/verseparts</a
+              >
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Pages</h2>
+
+        <div class="endpoint">
+          <div class="endpoint-header" onclick="toggle(this)">
+            <span class="method">GET</span>
+            <div>
+              <div class="endpoint-path">
+                /page/[page_number]?author_id=[author_id]
+              </div>
+              <div class="endpoint-desc">
+                Gets all verses on a given Qur'an page with translations.
+              </div>
+            </div>
+          </div>
+          <div class="endpoint-body">
+            <p>
+              Example:
+              <a
+                href="https://api.acikkuran.com/page/1"
+                target="_blank"
+                rel="noopener noreferrer"
+                >https://api.acikkuran.com/page/1</a
+              >
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Roots</h2>
+
+        <div class="endpoint">
+          <div class="endpoint-header" onclick="toggle(this)">
+            <span class="method">GET</span>
+            <div>
+              <div class="endpoint-path">/root/latin/[latin_chars]</div>
+              <div class="endpoint-desc">
+                Gets root word information by its Latin transliteration.
+              </div>
+            </div>
+          </div>
+          <div class="endpoint-body">
+            <p>
+              Example:
+              <a
+                href="https://api.acikkuran.com/root/latin/ktb"
+                target="_blank"
+                rel="noopener noreferrer"
+                >https://api.acikkuran.com/root/latin/ktb</a
+              >
+            </p>
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <div class="endpoint-header" onclick="toggle(this)">
+            <span class="method">GET</span>
+            <div>
+              <div class="endpoint-path">
+                /root/latin/[latin_chars]/verses?page=[page]&amp;author=[author_id]
+              </div>
+              <div class="endpoint-desc">
+                Lists verses containing words from a given root.
+              </div>
+            </div>
+          </div>
+          <div class="endpoint-body">
+            <p>
+              Example:
+              <a
+                href="https://api.acikkuran.com/root/latin/ktb/verses"
+                target="_blank"
+                rel="noopener noreferrer"
+                >https://api.acikkuran.com/root/latin/ktb/verses</a
+              >
+            </p>
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <div class="endpoint-header" onclick="toggle(this)">
+            <span class="method">GET</span>
+            <div>
+              <div class="endpoint-path">
+                /root/latin/[latin_chars]/verseparts?page=[page]&amp;author=[author_id]
+              </div>
+              <div class="endpoint-desc">
+                Lists verseparts (words) derived from a given root.
+              </div>
+            </div>
+          </div>
+          <div class="endpoint-body">
+            <p>
+              Example:
+              <a
+                href="https://api.acikkuran.com/root/latin/ktb/verseparts"
+                target="_blank"
+                rel="noopener noreferrer"
+                >https://api.acikkuran.com/root/latin/ktb/verseparts</a
+              >
+            </p>
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <div class="endpoint-header" onclick="toggle(this)">
+            <span class="method">GET</span>
+            <div>
+              <div class="endpoint-path">/root/[id]</div>
+              <div class="endpoint-desc">Gets a root word by its numeric ID.</div>
+            </div>
+          </div>
+          <div class="endpoint-body">
+            <p>
+              Example:
+              <a
+                href="https://api.acikkuran.com/root/1"
+                target="_blank"
+                rel="noopener noreferrer"
+                >https://api.acikkuran.com/root/1</a
+              >
+            </p>
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <div class="endpoint-header" onclick="toggle(this)">
+            <span class="method">GET</span>
+            <div>
+              <div class="endpoint-path">/rootchars</div>
+              <div class="endpoint-desc">
+                Lists all root characters (first letters) available.
+              </div>
+            </div>
+          </div>
+          <div class="endpoint-body">
+            <p>
+              Example:
+              <a
+                href="https://api.acikkuran.com/rootchars"
+                target="_blank"
+                rel="noopener noreferrer"
+                >https://api.acikkuran.com/rootchars</a
+              >
+            </p>
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <div class="endpoint-header" onclick="toggle(this)">
+            <span class="method">GET</span>
+            <div>
+              <div class="endpoint-path">/rootchar/[id]</div>
+              <div class="endpoint-desc">
+                Lists all roots starting with a given root character.
+              </div>
+            </div>
+          </div>
+          <div class="endpoint-body">
+            <p>
+              Example:
+              <a
+                href="https://api.acikkuran.com/rootchar/1"
+                target="_blank"
+                rel="noopener noreferrer"
+                >https://api.acikkuran.com/rootchar/1</a
+              >
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Search</h2>
+
+        <div class="endpoint">
+          <div class="endpoint-header" onclick="toggle(this)">
+            <span class="method">GET</span>
+            <div>
+              <div class="endpoint-path">
+                /search?q=[query]&amp;author=[author_id]
+              </div>
+              <div class="endpoint-desc">
+                Full-text search across translations (requires MeiliSearch).
+              </div>
+            </div>
+          </div>
+          <div class="endpoint-body">
+            <p>
+              Example:
+              <a
+                href="https://api.acikkuran.com/search?q=rahman"
+                target="_blank"
+                rel="noopener noreferrer"
+                >https://api.acikkuran.com/search?q=rahman</a
+              >
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <p>
+        &copy; <a href="https://acikkuran.com">Açık Kuran</a> &mdash; Made with
+        ♥ by volunteers &mdash; Licensed under
+        <a
+          href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >CC BY-NC-SA 4.0</a
+        >
+      </p>
+      <p style="margin-top: 0.4rem">
+        Support on
+        <a
+          href="https://patreon.com/acikkuran"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Patreon</a
+        >
+        &mdash;
+        <a
+          href="https://github.com/ziegfiroyt/acikkuran-api"
+          target="_blank"
+          rel="noopener noreferrer"
+          >View on GitHub</a
+        >
+      </p>
+    </footer>
+
+    <script>
+      function toggle(header) {
+        header.parentElement.classList.toggle('open')
+      }
+    </script>
+  </body>
+</html>
