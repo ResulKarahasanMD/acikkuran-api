@@ -17,6 +17,7 @@ python3 apply_live_pages.py               # sources/live_pages.json → gerçek 
 node fetch_acikkuran.mjs                  # acikkuran.com ayet JSON'ları → sources/acikkuran/ (2 istek/sn, sürdürülebilir)
 node load_acikkuran.mjs                   # acikkuran verisini tabloların ÜZERİNE yazar (dipnot, kelime meali, kök id)
 node index_meili.mjs                      # acikkuran_translations → Meilisearch 'translations' indeksi (318.000 belge)
+./add_translation.sh 200 tr.golpinarli "Abdülbaki Gölpınarlı" "Kur'an-ı Kerim ve Meali" tr   # isteğe bağlı: Tanzil meali ekle (upsert + Meili)
 ```
 
 `DB_URL` varsayılanı `postgres://localhost:5432/acikkuran`; ana `.env` de buraya bakar. Yerel Postgres SSL sunmadığı
@@ -56,6 +57,13 @@ acikkuran verisi belirler.
 - Test: 291 testin tamamı geçer. `acikkuran_rootwords.id` gerçek DB gibi mushaf sırasında 1'den başlar (`/words` ucu);
   canlı sitenin kelime kimlikleri `acikkuran_verseparts.id`'de korunur.
 - `/surah/1/verse/1/translations` sırası: uçta ORDER BY yok; `fix_translation_order.sql` fiziksel sırayı kurar, test geçer.
+
+## Meal ekleme
+
+`add_translation.sh <author_id> <tanzil_id|dosya> "<Ad>" "<Eser>" <tr|en> [--no-meili]` Tanzil biçimli (`sure|ayet|metin`)
+bir meali indirir, 6236 satır doğrular, yazarı ve meali upsert eder, Meilisearch indeksini yeniler. Kendi eklemeleriniz için
+`author_id` 200 ve üstünü kullanın; 1–117 acikkuran'ın 51 yazarına ayrılmıştır. 2026-09-17: 200 = Abdülbaki Gölpınarlı (tr.golpinarli) eklendi,
+`/authors` 52 kayıt, 291 test geçer.
 
 ## Bilinen sınırlar
 
