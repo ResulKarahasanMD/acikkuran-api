@@ -61,9 +61,8 @@ function buildFastify() {
     Postgres,
     {
       connectionString: process.env.DB_URL,
-      ssl: {
-        rejectUnauthorized: false,
-      },
+      // DB_SSL=false: yerel Postgres SSL sunmaz; pg SSL isteyince "server does not support SSL" verir.
+      ssl: process.env.DB_SSL === 'false' ? false : { rejectUnauthorized: false },
     },
     {
       logLevel: 'debug',
