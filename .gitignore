@@ -6,3 +6,6 @@ node_modules/
 zieg
 /routes/zieg.venv/
 __pycache__/
+
+# Local run outputs (out_<date>_<id>/)
+out_*/
