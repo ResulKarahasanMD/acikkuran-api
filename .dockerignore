@@ -1,0 +1,16 @@
+.git
+.github
+.claude
+.tap
+.logs
+.DS_Store
+.env
+.env.*
+node_modules
+out_*
+tools
+test
+examples
+skills
+*.md
+logo.png
