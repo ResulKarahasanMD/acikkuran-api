@@ -4,6 +4,17 @@ const defaultAuthors = require('../data/defaultAuthors.json')
 require('dotenv').config()
 
 async function routes(fastify) {
+  // A failed search (Meilisearch down, bad key, unreadable index) has to
+  // answer the request: left as an unhandled rejection it kills the process.
+  function searchFailed(req, reply) {
+    return (err) => {
+      req.log.error({ err }, 'search failed')
+      if (!reply.sent) {
+        reply.code(503).send({ data: { error: 'search-unavailable' } })
+      }
+    }
+  }
+
   // ------------------------------
   // GET /random-search
   // ------------------------------
@@ -49,6 +60,7 @@ async function routes(fastify) {
       .then((res) => {
         reply.send({ data: res })
       })
+      .catch(searchFailed(req, reply))
   })
 
   // ------------------------------
@@ -289,6 +301,7 @@ async function routes(fastify) {
 
           reply.send({ data: modifiedSearchResult })
         })
+        .catch(searchFailed(req, reply))
     } else {
       reply.send({ data: { surahs, verses, hits: [] } })
     }
